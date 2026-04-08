@@ -276,7 +276,7 @@ function CalendarView({data,onCancel,onApptAdded}){
     ?`${fS(days[0])} — ${fS(days[numDays-1])}`
     :numDays===1?fDF(days[0]):`${fS(days[0])} — ${fS(days[numDays-1])}`
 
-  const SLOT_H=26,START_H=10,END_H=20
+  const SLOT_H=26,START_H=9,END_H=20
   const TOTAL_SLOTS=(END_H-START_H)*2
   const timelineH=TOTAL_SLOTS*SLOT_H
   const timeToY=t=>{const[h,m]=t.split(':').map(Number);return((h*60+m-START_H*60)/30)*SLOT_H}
@@ -658,6 +658,13 @@ export default function App(){
     })
     const{data:{subscription}}=supabase.auth.onAuthStateChange((_e,s)=>{if(!s?.user){setUser(null);setProfile(null);setView('auth')}})
     return()=>subscription.unsubscribe()
+  },[loadAll])
+
+  useEffect(()=>{
+    const channel=supabase.channel('admin-appointments')
+      .on('postgres_changes',{event:'*',schema:'public',table:'appointments'},()=>loadAll())
+      .subscribe()
+    return()=>supabase.removeChannel(channel)
   },[loadAll])
 
   const handleLogin=async u=>{setUser(u);const{data:prof}=await supabase.from('profiles').select('*').eq('id',u.id).single();if(prof?.role!=='admin'){setView('denied');return}setProfile(prof);setView('app');loadAll()}
