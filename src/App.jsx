@@ -281,8 +281,8 @@ function CalendarView({data,onCancel,onApptAdded}){
   const timelineH=TOTAL_SLOTS*SLOT_H
   const timeToY=t=>{const[h,m]=t.split(':').map(Number);return((h*60+m-START_H*60)/30)*SLOT_H}
   const durToH=min=>(min/30)*SLOT_H
-  const getAppts=(dateKey,styId)=>appts.filter(a=>a.appointment_date===dateKey&&a.stylist_id===styId&&a.status==='confirmed')
-  const getBlocks=(dateKey,styId)=>blocks.filter(b=>b.blocked_date===dateKey&&b.stylist_id===styId)
+  const getAppts=(dateKey,styId)=>appts.filter(a=>(a.appointment_date||'').slice(0,10)===dateKey&&a.stylist_id===styId&&a.status==='confirmed')
+  const getBlocks=(dateKey,styId)=>blocks.filter(b=>(b.blocked_date||'').slice(0,10)===dateKey&&b.stylist_id===styId)
   const hourLabels=[]
   for(let h=START_H;h<=END_H;h++)hourLabels.push(`${String(h).padStart(2,'0')}:00`)
 
